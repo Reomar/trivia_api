@@ -35,6 +35,21 @@ class TriviaTestCase(unittest.TestCase):
     TODO
     Write at least one test for each test for successful operation and for expected errors.
     """
+
+    '''
+    Test for /categories endpoint
+    '''
+    def test_get_all_categories(self):
+        res = self.client().get('/categories')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['categories'])
+
+
+    '''
+    Tests for /questions endpoint
+    '''
     def test_get_all_questions(self):
         """Test /questions endpoint that retrives all the questions """
 
