@@ -95,7 +95,7 @@ def create_app(test_config=None):
     })
 
   '''
-  @TODO:
+  @TODO:✅
   Create an endpoint to DELETE question using a question ID.
 
   TEST: When you click the trash icon next to a question, the question will be removed.
@@ -125,9 +125,32 @@ def create_app(test_config=None):
   the form will clear and the question will appear at the end of the last page
   of the questions list in the "List" tab.
   '''
+  @app.route('/questions', methods=['POST'])
+  def add_new_question():
 
+    req = request.get_json()
+
+    # Check if the request has all the required data
+    if 'question' and 'answer' and 'difficulty' and 'category' not in req:
+      abort(422)
+
+    # Try to insert the data to the db
+    try:
+      new_question = Question(question= req.get('question'),
+                              answer = req.get('answer'),
+                              category = req.get('category'),
+                              difficulty = req.get('difficulty'))
+
+      new_question.insert()
+
+      return jsonify({
+        'success': True
+      })
+
+    except:
+      abort(422)
   '''
-  @TODO: 
+  @TODO:
   Create a POST endpoint to get questions based on a search term. 
   It should return any questions for whom the search term 
   is a substring of the question. 
