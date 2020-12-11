@@ -37,7 +37,7 @@ class TriviaTestCase(unittest.TestCase):
     """
 
     '''
-    Test for /categories endpoint
+    Test for /categories GET endpoint
     '''
     def test_get_all_categories(self):
         res = self.client().get('/categories')
@@ -48,7 +48,7 @@ class TriviaTestCase(unittest.TestCase):
 
 
     '''
-    Tests for /questions endpoint
+    Tests for /questions GET endpoint
     '''
     def test_get_all_questions(self):
         """Test /questions endpoint that retrives all the questions """
@@ -62,7 +62,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertNotEqual(data['total_questions'], 0)
         self.assertTrue(data['categories'])
 
-    def test_404_if_questions_dosent_exist(self):
+    def test_404_if_get_questions_dosent_exist(self):
         """Test /questions endpoint when page dosen't exist (404) """
 
         res = self.client().get('/questions?page=10000')
@@ -72,6 +72,26 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'Not found')
 
+    '''
+    Test for /questions/<id> DELETE endpoint
+    '''
+    def test_delete_question(self):
+        ''' Test /question/<id> endpoint that deletes question using id'''
+        res = self.client().delete('/questions/13')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+
+    def test_404_delete_question_dosent_exist(self):
+        """Test /question/<id> endpoint when question dosen't exist (404) """
+
+        res = self.client().delete('/questions/10000')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'Not found')
 
 
 # Make the tests conveniently executable
