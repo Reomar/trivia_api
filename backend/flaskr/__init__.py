@@ -34,7 +34,7 @@ def create_app(test_config=None):
   cors = CORS(app)
 
   '''
-  @TODO: Use the after_request decorator to set Access-Control-Allow
+  @TODO: Use the after_request decorator to set Access-Control-Allow✅
   '''
   # CORS Headers
   @app.after_request
@@ -46,7 +46,7 @@ def create_app(test_config=None):
   '''
   @TODO:
   Create an endpoint to handle GET requests
-  for all available categories.
+  for all available categories.✅
   '''
   @app.route('/categories', methods=['GET'])
   def get_categories():
@@ -62,16 +62,16 @@ def create_app(test_config=None):
     })
 
   '''
-  @TODO:
-  Create an endpoint to handle GET requests for questions, 
-  including pagination (every 10 questions). 
-  This endpoint should return a list of questions, 
-  number of total questions, current category, categories. 
+  @TODO:✅
+  Create an endpoint to handle GET requests for questions,
+  including pagination (every 10 questions).
+  This endpoint should return a list of questions,
+  number of total questions, current category, categories.
 
   TEST: At this point, when you start the application
   you should see questions and categories generated,
   ten questions per page and pagination at the bottom of the screen for three pages.
-  Clicking on the page numbers should update the questions. 
+  Clicking on the page numbers should update the questions.
   '''
   @app.route('/questions',methods=['GET'])
   def Retrive_all():
@@ -95,22 +95,35 @@ def create_app(test_config=None):
     })
 
   '''
-  @TODO: 
-  Create an endpoint to DELETE question using a question ID. 
+  @TODO:
+  Create an endpoint to DELETE question using a question ID.
 
   TEST: When you click the trash icon next to a question, the question will be removed.
-  This removal will persist in the database and when you refresh the page. 
+  This removal will persist in the database and when you refresh the page.
   '''
+  @app.route('/questions/<int:id>', methods=['DELETE'])
+  def delete_question(id):
 
+    # Try to delete the question using id, if not susessful return 404
+    try:
+      target_question = Question.query.get(id)
+      target_question.delete()
+
+      return jsonify({
+        'success': True
+      })
+
+    except:
+      abort(404)
   '''
-  @TODO: 
-  Create an endpoint to POST a new question, 
-  which will require the question and answer text, 
+  @TODO:
+  Create an endpoint to POST a new question,
+  which will require the question and answer text,
   category, and difficulty score.
 
-  TEST: When you submit a question on the "Add" tab, 
+  TEST: When you submit a question on the "Add" tab,
   the form will clear and the question will appear at the end of the last page
-  of the questions list in the "List" tab.  
+  of the questions list in the "List" tab.
   '''
 
   '''
