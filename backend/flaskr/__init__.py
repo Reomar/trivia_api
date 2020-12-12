@@ -1,3 +1,4 @@
+from logging import error
 import os
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
@@ -116,7 +117,7 @@ def create_app(test_config=None):
     except:
       abort(404)
   '''
-  @TODO:
+  @TODO:✅
   Create an endpoint to POST a new question,
   which will require the question and answer text,
   category, and difficulty score.
@@ -130,16 +131,30 @@ def create_app(test_config=None):
 
     req = request.get_json()
 
-    # Check if the request has all the required data
-    if 'question' and 'answer' and 'difficulty' and 'category' not in req:
+    if req == None:
       abort(422)
 
-    # Try to insert the data to the db
+    # Check if the request has all the required data
+    if ('question' and 'answer' and 'difficulty' and 'category') not in req:
+      print('missing data')
+      abort(422)
+
+    new_question = req.get('question')
+    new_answer = req.get('answer')
+    new_category = req.get('category')
+    new_difficulty = req.get('difficulty')
+
+    print(new_question, new_answer, new_category, new_difficulty)
+    # Check if the data has a value
+    if not (new_question and new_answer and new_difficulty and new_category):
+      print('Data needs contex')
+      abort(422)
+
     try:
-      new_question = Question(question= req.get('question'),
-                              answer = req.get('answer'),
-                              category = req.get('category'),
-                              difficulty = req.get('difficulty'))
+      new_question = Question(question= new_question,
+                              answer = new_answer,
+                              category = new_category,
+                              difficulty = new_difficulty)
 
       new_question.insert()
 
@@ -147,7 +162,7 @@ def create_app(test_config=None):
         'success': True
       })
 
-    except:
+    except :
       abort(422)
   '''
   @TODO:
