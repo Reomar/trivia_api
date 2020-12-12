@@ -207,6 +207,39 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'Not found')
 
+    '''
+    Tests for categories/<id>/questions endpoint (GET)
+    '''
+
+    def test_get_questions_sorted_by_category(self):
+        ''' Test the categories/<id>/questions endpoint to get questions sorted by category'''
+
+        # send a get request to the endpoint
+        res = self.client().get('/categories/1/questions')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['questions'])
+        self.assertNotEqual(data['total_questions'], 0)
+        self.assertEqual(data['current_category'], 1)
+
+    def test_404_get_questions_sorted_by_category_not_found(self):
+        ''' Test getting erorr (404) from categories/<id>/questions endpoint when id not found'''
+
+        # send a get request to the endpoint
+        res = self.client().get('/categories/99999999/questions')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'Not found')
+
+
+
+
+
+
 
 
 
