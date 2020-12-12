@@ -1,5 +1,6 @@
 from logging import error
 import os
+import sys
 from flask import Flask, request, abort, jsonify
 from flask.globals import session
 from flask_sqlalchemy import SQLAlchemy
@@ -230,19 +231,58 @@ def create_app(test_config=None):
 
 
   '''
-  @TODO: 
-  Create a POST endpoint to get questions to play the quiz. 
-  This endpoint should take category and previous question parameters 
-  and return a random questions within the given category, 
-  if provided, and that is not one of the previous questions. 
+  @TODO:✅
+  Create a POST endpoint to get questions to play the quiz.
+  This endpoint should take category and previous question parameters
+  and return a random questions within the given category,
+  if provided, and that is not one of the previous questions.
 
   TEST: In the "Play" tab, after a user selects "All" or a category,
   one question at a time is displayed, the user is allowed to answer
-  and shown whether they were correct or not. 
+  and shown whether they were correct or not.
   '''
+  @app.route('/quizzes', methods=['POST'])
+  def quiz_question():
+
+    # parse the request body
+    req = request.get_json()
+
+
+    if not ('quiz_category' and 'previous_questions') in req:
+      abort(422)
+
+    quiz_category = req.get('quiz_category')
+    previous_questions = req.get('previous_questions')
+
+    try:
+      # Retrive questions that are not in previous_questions
+      # If category is provided query using it else retrive all question
+      if quiz_category['id'] == 0:
+        questions_data = Question.query.filter(~Question.id.in_(previous_questions)).all()
+
+      else:
+        questions_data = Question.query.filter(Question.category == quiz_category['id']).filter(~Question.id.in_(previous_questions)).all()
+
+      # format the questions_data to a list
+      questions_list =[Question.format(question) for question in questions_data]
+
+      # Check if there is questions, if not set the questins value to None
+      if questions_list:
+        question = random.choice(questions_list)
+      else:
+        question = None
+
+      return jsonify({
+          'success': True,
+          'question': question,
+      })
+
+    except:
+      print(sys.exc_info())
+      abort(422)
 
   '''
-  @TODO:
+  @TODO: ✅
   Create error handlers for all expected errors
   including 404 and 422.
   '''
@@ -264,4 +304,3 @@ def create_app(test_config=None):
 
 
   return app
-
