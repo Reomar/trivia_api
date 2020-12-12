@@ -1,6 +1,7 @@
 import os
 import unittest
 import json
+from flask.json import jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 from flaskr import create_app
@@ -26,6 +27,13 @@ class TriviaTestCase(unittest.TestCase):
             # create all tables
             self.db.create_all()
 
+        self.test_question = {
+            'question': 'new question',
+            'answer': 'new answer',
+            'difficulty': 1,
+            'category': 1
+        }
+
     def tearDown(self):
         """Executed after reach test"""
         pass
@@ -38,6 +46,7 @@ class TriviaTestCase(unittest.TestCase):
 
     '''
     Test for /categories GET endpoint
+    ---------------------------------
     '''
     def test_get_all_categories(self):
         res = self.client().get('/categories')
@@ -49,6 +58,7 @@ class TriviaTestCase(unittest.TestCase):
 
     '''
     Tests for /questions GET endpoint
+    ---------------------------------
     '''
     def test_get_all_questions(self):
         """Test /questions endpoint that retrives all the questions """
@@ -72,8 +82,10 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'Not found')
 
+
     '''
-    Test for /questions/<id> DELETE endpoint
+    Tests for /questions/<id> DELETE endpoint
+    -----------------------------------------
     '''
     def test_delete_question(self):
         ''' Test /question/<id> endpoint that deletes question using id'''
@@ -92,6 +104,75 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'Not found')
+
+
+    '''
+    Test for /questions POST endpoint
+    ---------------------------------
+    '''
+    def test_insert_new_question(self):
+        """Test inserting new question to /question endpoint"""
+
+        test_question = {
+            'question': 'new question',
+            'answer': 'new answer',
+            'difficulty': 1,
+            'category': 1
+        }
+
+        question_count_before = Question.query.count()
+
+        res = self.client().post('/questions', json=test_question)
+        data = json.loads(res.data)
+
+        question_count_after = Question.query.count()
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(question_count_after , question_count_before + 1)
+
+    def test_422_missing_data_insert_new_question(self):
+        """Test getting 422 error when posting to /questions with missing data"""
+
+        test_question = {
+            'question': 'new question',
+            'answer': 'new answer',
+            'difficulty': 1,
+        }
+
+        question_count_before = Question.query.count()
+
+        res = self.client().post('/questions', json=test_question)
+        data = json.loads(res.data)
+
+        question_count_after = Question.query.count()
+
+        self.assertEqual(res.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'unprocessable')
+        self.assertEqual(question_count_after , question_count_before)
+
+    def test_422_None_value_data_insert_new_question(self):
+        """Test getting 422 error when posting to /questions with data of a value of None"""
+        test_question = {
+            'question': '',
+            'answer': '',
+            'difficulty': 1,
+            'category': 1
+        }
+
+        question_count_before = Question.query.count()
+
+        res = self.client().post('/questions', json=test_question)
+        data = json.loads(res.data)
+
+        question_count_after = Question.query.count()
+
+        self.assertEqual(res.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'unprocessable')
+        self.assertEqual(question_count_after , question_count_before)
+
 
 
 # Make the tests conveniently executable
