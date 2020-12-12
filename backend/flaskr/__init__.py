@@ -1,6 +1,7 @@
 from logging import error
 import os
 from flask import Flask, request, abort, jsonify
+from flask.globals import session
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
@@ -139,22 +140,21 @@ def create_app(test_config=None):
       print('missing data')
       abort(422)
 
-    new_question = req.get('question')
-    new_answer = req.get('answer')
-    new_category = req.get('category')
-    new_difficulty = req.get('difficulty')
+    req_question = req.get('question')
+    req_answer = req.get('answer')
+    req_category = req.get('category')
+    req_difficulty = req.get('difficulty')
 
-    print(new_question, new_answer, new_category, new_difficulty)
     # Check if the data has a value
-    if not (new_question and new_answer and new_difficulty and new_category):
+    if not (req_question and req_answer and req_difficulty and req_category):
       print('Data needs contex')
       abort(422)
 
     try:
-      new_question = Question(question= new_question,
-                              answer = new_answer,
-                              category = new_category,
-                              difficulty = new_difficulty)
+      new_question = Question(question= req_question,
+                              answer = req_answer,
+                              category = req_category,
+                              difficulty = req_difficulty)
 
       new_question.insert()
 
@@ -165,15 +165,40 @@ def create_app(test_config=None):
     except :
       abort(422)
   '''
-  @TODO:
-  Create a POST endpoint to get questions based on a search term. 
-  It should return any questions for whom the search term 
-  is a substring of the question. 
+  @TODO: ✅
+  Create a POST endpoint to get questions based on a search term.
+  It should return any questions for whom the search term
+  is a substring of the question.
 
-  TEST: Search by any phrase. The questions list will update to include 
-  only question that include that string within their question. 
-  Try using the word "title" to start. 
+  TEST: Search by any phrase. The questions list will update to include
+  only question that include that string within their question.
+  Try using the word "title" to start.
   '''
+  @app.route('/questions/search', methods=['POST'])
+  def search_question():
+
+    # parse the request body
+    req = request.get_json()
+    search_term = req.get('searchTerm')
+
+    # query questions from the db using the search_term
+    questions_data = Question.query.filter(Question.question.ilike(f'%{search_term}%')).all()
+
+    questions = paginate(request, questions_data)
+
+    # Return error if there is no questions found in the requested page
+    if len(questions) == 0:
+      abort(404)
+
+
+    return jsonify({
+        'success': True,
+        'questions': questions,
+        'total_questions': len(questions_data),
+        'current_category': None
+    })
+
+
 
   '''
   @TODO: 
