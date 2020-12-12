@@ -1,4 +1,5 @@
 import os
+from re import search
 import unittest
 import json
 from flask.json import jsonify
@@ -172,6 +173,42 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'unprocessable')
         self.assertEqual(question_count_after , question_count_before)
+
+
+    '''
+    Tests for /questions/search endpoint (POST)
+    --------------------------------------------
+    '''
+
+    def test_search_questions(self):
+        '''Test search for questions '''
+
+        search_term = {'searchTerm': 'Tom Hanks'}
+
+        # Send search Term to the endpoint
+        res = self.client().post('/questions/search', json=search_term)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['questions'])
+        self.assertNotEqual(data['total_questions'], 0)
+
+    def test_404_search_question_not_found(self):
+        '''Test 404 error when search for questions in not found'''
+
+        search_term = {'searchTerm': ",Q=_,2wDi>1+33NWC:]+|E~6vuD%Xx"}
+
+        # Send search Term to the endpoint
+        res = self.client().post('/questions/search', json=search_term)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'Not found')
+
+
+
 
 
 
