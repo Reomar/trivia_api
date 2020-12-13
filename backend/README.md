@@ -52,42 +52,77 @@ Setting the `FLASK_ENV` variable to `development` will detect file changes and r
 
 Setting the `FLASK_APP` variable to `flaskr` directs flask to use the `flaskr` directory and the `__init__.py` file to find the application. 
 
-## Tasks
+##Endpoints
+- GET  `/categories`
+- GET  `/questions`
+- GET `/categories/< id >/question`
+- POST `/questions`
+- POST `/questions/search`
+- POST `/quizzes`
+- DELETE `/questions/< id  >`
+----
 
-One note before you delve into your tasks: for each endpoint you are expected to define the endpoint and response data. The frontend will be a plentiful resource because it is set up to expect certain endpoints and response data formats already. You should feel free to specify endpoints in your own way; if you do so, make sure to update the frontend or you will get some unexpected behavior. 
-
-1. Use Flask-CORS to enable cross-domain requests and set response headers. 
-2. Create an endpoint to handle GET requests for questions, including pagination (every 10 questions). This endpoint should return a list of questions, number of total questions, current category, categories. 
-3. Create an endpoint to handle GET requests for all available categories. 
-4. Create an endpoint to DELETE question using a question ID. 
-5. Create an endpoint to POST a new question, which will require the question and answer text, category, and difficulty score. 
-6. Create a POST endpoint to get questions based on category. 
-7. Create a POST endpoint to get questions based on a search term. It should return any questions for whom the search term is a substring of the question. 
-8. Create a POST endpoint to get questions to play the quiz. This endpoint should take category and previous question parameters and return a random questions within the given category, if provided, and that is not one of the previous questions. 
-9. Create error handlers for all expected errors including 400, 404, 422 and 500. 
-
-REVIEW_COMMENT
-```
-This README is missing documentation of your endpoints. Below is an example for your endpoint to get all categories. Please use it as a reference for creating your documentation and resubmit your code. 
-
-Endpoints
-GET '/categories'
-GET ...
-POST ...
-DELETE ...
-
-GET '/categories'
+######  GET /categories
 - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
-- Request Arguments: None
-- Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
-{'1' : "Science",
-'2' : "Art",
-'3' : "Geography",
-'4' : "History",
-'5' : "Entertainment",
-'6' : "Sports"}
+- **Request Arguments**: None
+- **Returns**: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
 
-```
+
+    {'1' : "Science",
+    '2' : "Art",
+    '3' : "Geography",
+    '4' : "History",
+    '5' : "Entertainment",
+    '6' : "Sports"}
+---
+###### Get /questions
+- Fetches a list of all the available questions in the database, pagenated for 10 questions.
+- A question object contains `id, question, answer, category, difficulty`
+**Request Arguments**: An *optional* page number Query Parameters 
+ex: `/questions?page=2`
+- **Returns**: An object with a key:values pair:
+1. `questions`, A list of 10 questions objects
+2.  `total_questions`, number of all questions 
+3. `categories`, A list of all available categories
+
+
+
+    {
+    	"categories": {
+    		"1": "Science",
+    		...
+    	},
+    	"questions": [
+    		{
+    			"answer": "Apollo 13",
+    			"category": 5,
+    			"difficulty": 4,
+    			"id": 2,
+    			"question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+    		},
+    		...
+    	]
+    	"success": true,
+    	"total_questions": 19
+    }
+- **Expected erorrs**: If a page rquested that is out of questions range(which is 10 per page) will return a *404 error*
+
+---
+######  GET /categories/< id >/questions
+- Fetches questions based on category
+
+- **Request Arguments**: None
+- **Returns**: An object with a key:values pair:
+1. `questions`, A list of 10 questions objects
+2.  `total_questions`: number of all questions 
+3. `current_category`' id of the requested category
+
+- **Expected erorrs**: 
+1. If a page rquested is out of questions range(which is 10 per page) will return a *404 error*
+2. Worng category  id will return a *404 error*
+
+---
+
 
 
 ## Testing
