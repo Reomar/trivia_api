@@ -236,13 +236,36 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['message'], 'Not found')
 
 
+    '''
+    Tests for categories/<id>/questions endpoint (GET)
+    '''
 
+    def test_get_quiz_question(self):
+        ''' Test getting a qustion from /quizzes that wasent sent befor'''
+        sent_request = {
+            'previous_questions': [],
+            'quiz_category':  {'type': "click", 'id': 0}
+        }
 
+        res = self.client().post('/quizzes', json = sent_request)
+        data =  json.loads(res.data)
 
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['question'])
 
+    def test_422_get_quiz_question_missing_request(self):
+        ''' Test getting a qustion from /quizzes that wasent sent befor'''
+        sent_request = {
+            'quiz_category':  {'type': "click", 'id': 0}
+        }
 
+        res = self.client().post('/quizzes', json = sent_request)
+        data =  json.loads(res.data)
 
-
+        self.assertEqual(res.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'unprocessable')
 
 
 # Make the tests conveniently executable
