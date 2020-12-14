@@ -85,12 +85,20 @@ def create_app(test_config=None):
     '''
     @app.route('/questions', methods=['GET'])
     def Retrive_all():
-        questions_data = Question.query.order_by(Question.id).all()
 
-        questions = paginate(request, questions_data)
+        selected_page = request.args.get('page', 1, type=int)
+        current_index = selected_page - 1
+
+            Question.id
+        ).limit(QUESTIONS_PER_PAGE).offset(current_index * QUESTIONS_PER_PAGE).all()
+
+        questions_on_page = [Question.format(
+            question) for question in questions_data]
+
+        questions_count = Question.query.count()
 
         # Return error if there is no questions found in the requested page
-        if len(questions) == 0:
+        if len(questions_on_page) == 0:
             abort(404)
 
         categories_data = Category.query.all()
@@ -99,8 +107,8 @@ def create_app(test_config=None):
 
         return jsonify({
             'success': True,
-            'questions': questions,
-            'total_questions': len(questions_data),
+            'questions': questions_on_page,
+            'total_questions': questions_count,
             'categories': all_categories,
             'current_category': None
         })
@@ -193,11 +201,15 @@ def create_app(test_config=None):
         req = request.get_json()
         search_term = req.get('searchTerm')
 
-        # query questions from the db using the search_term
-        questions_data = Question.query.filter(
-            Question.question.ilike(f'%{search_term}%')).all()
+        selected_page = request.args.get('page', 1, type=int)
+        current_index = selected_page - 1
 
-        questions = paginate(request, questions_data)
+        # query questions from the db using the search_term
+        questions_data = Question.query.order_by(Question.id).filter(
+            Question.question.ilike(f'%{search_term}%')).limit(QUESTIONS_PER_PAGE).offset(current_index * QUESTIONS_PER_PAGE).all()
+
+        questions = [Question.format(question)
+                     for question in questions_data]
 
         # Return error if there is no questions found in the requested page
         if len(questions) == 0:
