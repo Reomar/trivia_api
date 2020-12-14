@@ -89,8 +89,10 @@ def create_app(test_config=None):
         selected_page = request.args.get('page', 1, type=int)
         current_index = selected_page - 1
 
+        questions_data = Question.query.order_by(
             Question.id
-        ).limit(QUESTIONS_PER_PAGE).offset(current_index * QUESTIONS_PER_PAGE).all()
+        ).limit(QUESTIONS_PER_PAGE).offset(
+            current_index * QUESTIONS_PER_PAGE).all()
 
         questions_on_page = [Question.format(
             question) for question in questions_data]
@@ -206,7 +208,9 @@ def create_app(test_config=None):
 
         # query questions from the db using the search_term
         questions_data = Question.query.order_by(Question.id).filter(
-            Question.question.ilike(f'%{search_term}%')).limit(QUESTIONS_PER_PAGE).offset(current_index * QUESTIONS_PER_PAGE).all()
+            Question.question.ilike(f'%{search_term}%')).limit(
+                QUESTIONS_PER_PAGE).offset(
+                    current_index * QUESTIONS_PER_PAGE).all()
 
         questions = [Question.format(question)
                      for question in questions_data]
