@@ -10,6 +10,7 @@ from models import setup_db, Question, Category, DB_PASSWORD, DB_USER, DB_HOST
 
 DB_NAME_TEST = os.getenv('DB_NAME_TEST', 'trivia_test')
 
+
 class TriviaTestCase(unittest.TestCase):
     """This class represents the trivia test case"""
 
@@ -18,8 +19,8 @@ class TriviaTestCase(unittest.TestCase):
         self.app = create_app()
         self.client = self.app.test_client
         self.database_name = DB_NAME_TEST
-        self.database_path = database_path = 'postgresql://{}:{}@{}/{}'.format(DB_USER, DB_PASSWORD, DB_HOST, DB_NAME_TEST)
-
+        self.database_path = database_path = 'postgresql://{}:{}@{}/{}'.format(
+            DB_USER, DB_PASSWORD, DB_HOST, DB_NAME_TEST)
 
         setup_db(self.app, self.database_path)
 
@@ -41,16 +42,17 @@ class TriviaTestCase(unittest.TestCase):
         """Executed after reach test"""
         pass
 
-
     """
     TODO
-    Write at least one test for each test for successful operation and for expected errors.
+    Write at least one test for each test for
+    successful operation and for expected errors.
     """
 
     '''
     Test for /categories GET endpoint
     ---------------------------------
     '''
+
     def test_get_all_categories(self):
         res = self.client().get('/categories')
         data = json.loads(res.data)
@@ -58,11 +60,11 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['categories'])
 
-
     '''
     Tests for /questions GET endpoint
     ---------------------------------
     '''
+
     def test_get_all_questions(self):
         """Test /questions endpoint that retrives all the questions """
 
@@ -85,11 +87,11 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'Not found')
 
-
     '''
     Tests for /questions/<id> DELETE endpoint
     -----------------------------------------
     '''
+
     def test_delete_question(self):
         ''' Test /question/<id> endpoint that deletes question using id'''
         res = self.client().delete('/questions/13')
@@ -108,11 +110,11 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'Not found')
 
-
     '''
     Test for /questions POST endpoint
     ---------------------------------
     '''
+
     def test_insert_new_question(self):
         """Test inserting new question to /question endpoint"""
 
@@ -132,10 +134,13 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertEqual(question_count_after , question_count_before + 1)
+        self.assertEqual(question_count_after, question_count_before + 1)
 
     def test_422_missing_data_insert_new_question(self):
-        """Test getting 422 error when posting to /questions with missing data"""
+        """
+        Test getting 422 error when posting
+         to /questions with missing data
+        """
 
         test_question = {
             'question': 'new question',
@@ -153,10 +158,13 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'unprocessable')
-        self.assertEqual(question_count_after , question_count_before)
+        self.assertEqual(question_count_after, question_count_before)
 
     def test_422_None_value_data_insert_new_question(self):
-        """Test getting 422 error when posting to /questions with data of a value of None"""
+        """
+        Test getting 422 error when posting
+        to /questions with data of a value of None
+        """
         test_question = {
             'question': '',
             'answer': '',
@@ -174,8 +182,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'unprocessable')
-        self.assertEqual(question_count_after , question_count_before)
-
+        self.assertEqual(question_count_after, question_count_before)
 
     '''
     Tests for /questions/search endpoint (POST)
@@ -214,7 +221,10 @@ class TriviaTestCase(unittest.TestCase):
     '''
 
     def test_get_questions_sorted_by_category(self):
-        ''' Test the categories/<id>/questions endpoint to get questions sorted by category'''
+        '''
+        Test the categories/<id>/questions endpoint
+        to get questions sorted by category
+        '''
 
         # send a get request to the endpoint
         res = self.client().get('/categories/1/questions')
@@ -227,7 +237,10 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['current_category'], 1)
 
     def test_404_get_questions_sorted_by_category_not_found(self):
-        ''' Test getting erorr (404) from categories/<id>/questions endpoint when id not found'''
+        '''
+        Test getting erorr (404) from
+        categories/<id>/questions endpoint when id not found
+        '''
 
         # send a get request to the endpoint
         res = self.client().get('/categories/99999999/questions')
@@ -236,7 +249,6 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'Not found')
-
 
     '''
     Tests for categories/<id>/questions endpoint (GET)
@@ -249,8 +261,8 @@ class TriviaTestCase(unittest.TestCase):
             'quiz_category':  {'type': "click", 'id': 0}
         }
 
-        res = self.client().post('/quizzes', json = sent_request)
-        data =  json.loads(res.data)
+        res = self.client().post('/quizzes', json=sent_request)
+        data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
@@ -262,8 +274,8 @@ class TriviaTestCase(unittest.TestCase):
             'quiz_category':  {'type': "click", 'id': 0}
         }
 
-        res = self.client().post('/quizzes', json = sent_request)
-        data =  json.loads(res.data)
+        res = self.client().post('/quizzes', json=sent_request)
+        data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 422)
         self.assertEqual(data['success'], False)
