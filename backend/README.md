@@ -52,7 +52,7 @@ Setting the `FLASK_ENV` variable to `development` will detect file changes and r
 
 Setting the `FLASK_APP` variable to `flaskr` directs flask to use the `flaskr` directory and the `__init__.py` file to find the application. 
 
-##Endpoints
+## Endpoints
 - GET  `/categories`
 - GET  `/questions`
 - GET `/categories/< id >/question`
